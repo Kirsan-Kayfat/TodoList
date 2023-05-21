@@ -1,6 +1,8 @@
 package com.shuchenysh.todolist;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,13 +20,14 @@ public class AddNoteActivity extends AppCompatActivity {
     private RadioButton radioButtonMedium;
     private Button buttonSave;
 
-    private Database database = Database.getInstance();
+    private AddNoteViewModel addNoteViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_note);
         initViews();
+        addNoteViewModel = new ViewModelProvider(this).get(AddNoteViewModel.class);
 
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -32,8 +35,6 @@ public class AddNoteActivity extends AppCompatActivity {
                 saveNote();
             }
         });
-
-
     }
 
     public static Intent newIntent(Context context) {
@@ -53,9 +54,8 @@ public class AddNoteActivity extends AppCompatActivity {
             Toast.makeText(this, "Error. Field can't empty", Toast.LENGTH_SHORT).show();
         } else {
             int priority = getPriority();
-            int id = database.getNotes().size();
-            Note note = new Note(id, text, priority);
-            database.add(note);
+            Note note = new Note(text, priority);
+            addNoteViewModel.add(note);
             finish();
         }
     }
@@ -69,7 +69,6 @@ public class AddNoteActivity extends AppCompatActivity {
         } else {
             priority = 2;
         }
-
         return priority;
     }
 }

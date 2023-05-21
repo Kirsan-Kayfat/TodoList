@@ -1,37 +1,27 @@
 package com.shuchenysh.todolist;
 
+import android.app.Application;
+
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
+
 import java.util.ArrayList;
 
-public class Database {
+@androidx.room.Database(entities = {Note.class}, version = 1, exportSchema = false)
+public abstract class Database extends RoomDatabase {
 
     private ArrayList<Note> notes = new ArrayList<>();
-
     private static Database instance = null;
+    private static final String DB_NAME = "notes.db";
 
-    public static Database getInstance() {
+    public static Database getInstance(Application application) {
         if (instance == null) {
-            instance = new Database();
+            instance = Room.databaseBuilder(application, Database.class, DB_NAME).build();
         }
-
         return instance;
     }
 
-    private Database(){}
+    //private Database(){}
 
-    public void add(Note note) {
-        notes.add(note);
-    }
-
-    public void remove(int id) {
-        for (int i = 0; i < notes.size(); i++) {
-            Note note = notes.get(i);
-            if (note.getId() == id) {
-                notes.remove(note);
-            }
-        }
-    }
-
-    public ArrayList<Note> getNotes() {
-        return new ArrayList<>(notes);
-    }
+    public abstract NotesDao notesDao();
 }
